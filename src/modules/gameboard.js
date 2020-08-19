@@ -64,7 +64,17 @@ const Gameboard = () => {
     return shipArr;
   }
 
-  return { getBoard, createGameboard, setupShips, setShipCoord, receiveAttack, getShipArr }
+  const getShipsLeft = () => {
+    let count = 0;
+    shipArr.forEach(ship => {
+      if (ship.getShipStatus()) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+  return { getBoard, createGameboard, setupShips, setShipCoord, receiveAttack, getShipArr, getShipsLeft }
 }
 
 export { Gameboard };

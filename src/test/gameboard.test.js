@@ -39,4 +39,9 @@ describe('Gameboard', () => {
                                       [-1, -1, -1, -1, -1, -1, -1, -1],
                                       [-1, -1, -1, -1, -1, -1, -1, -1]]);
   });
+
+  test('Correctly returns 5 alive ships', () => {
+    board.setupShips();
+    expect(board.getShipsLeft()).toEqual(5);
+  })
 });

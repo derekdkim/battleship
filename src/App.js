@@ -2,6 +2,11 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+// Cram this in after componentDidMount()?
+// import { Game } from './modules/game.js';
+
+// const game = Game();
+
 function App() {
   return (
     <div className="App">
