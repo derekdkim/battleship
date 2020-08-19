@@ -1,58 +1,54 @@
-import { Ship } from '../modules/ship.js';
 import { Gameboard } from '../modules/gameboard.js';
 
 
 describe('Ship Placement', () => {
-  test('Correctly randomizes position', () => {
-    let gameboard = Gameboard();
-    gameboard.createGameboard();
-    const testShip0 = Ship(3);
-    const testShip1 = Ship(3);
-    const testShip2 = Ship(3);
-
-    testShip0.placeShip(gameboard);
-    testShip1.placeShip(gameboard);
-    testShip2.placeShip(gameboard);
-
-    // placeShip() will return positions of the ship in an array
-    expect(testShip0.getPos() && testShip1.getPos()).not.toEqual(testShip2.getPos());
+  
+  let gameboard = Gameboard();
+  gameboard.createGameboard();
+  gameboard.setupShips();
+  
+  test('5 ships present', () => {
+    expect(gameboard.getShipArr()).toHaveLength(5);
   });
 
-  test('Larger ship placement test to assess if they avoid stacking with already existing ships', () => {
-    let gameboard = Gameboard();
-    gameboard.createGameboard();
-    const testShip0 = Ship(5);
-    const testShip1 = Ship(4);
-    const testShip2 = Ship(3);
-    const testShip3 = Ship(3);
-    const testShip4 = Ship(2);
-
-    testShip0.placeShip(gameboard);
-    testShip1.placeShip(gameboard);
-    testShip2.placeShip(gameboard);
-    testShip3.placeShip(gameboard);
-    testShip4.placeShip(gameboard);
-
-    expect(testShip0.getPos()).not.toEqual(testShip1.getPos());
-
+  test('Carrier (5 length) has 5 coordinates', () => {
+    expect(gameboard.getShipArr()[0].getPos()).toHaveLength(5);
+    expect(gameboard.getShipArr()[0].getPos()).toEqual(expect.any(Array));
+    expect(gameboard.getShipArr()[0].getPos()[0]).toEqual(expect.any(Array));
+    expect(gameboard.getShipArr()[0].getPos()[0]).toHaveLength(2);
   });
 });
 
-xdescribe('Ship game logic', () => {
-  let gameboard = [[0, 0]];
-  const testShip0 = Ship(2);
-  testShip0.placeShip(gameboard);
+describe('Ship hit & sunk logic', () => {
+  let gameboard = Gameboard();
+  gameboard.createGameboard();
+  gameboard.setupShips();
 
   // Take two hits
-  const hitTestMsg = testShip0.hit(0, 0);
-  testShip0.hit(0, 1);
-  testShip0.isSunk();
+  const carrier = gameboard.getShipArr()[0];
+  const battleship = gameboard.getShipArr()[1];
+  const destroyer = gameboard.getShipArr()[4];
+  const carrierPos = carrier.getPos();
+  const destroyerPos = destroyer.getPos();
 
-  test('Hits are correctly registered', () => {
-    expect(hitTestMsg).toEqual([[0, 0], 1]); // .hit() returns [[x, y], positions remaining]
+  // Hit in every position
+  carrierPos.forEach(pos => {
+    carrier.receiveHit(pos);
   });
 
-  test('Ships are sunk when all positions are hit', () => {
-    expect(testShip0.alive).toEqual(false);
+  // Hit in only one position
+  destroyer.receiveHit(destroyerPos[0]);
+
+
+  test('Getting hit in all positions results in getting sunk', () => {
+    expect(carrier.getShipStatus()).toEqual(false); // True === alive, False === sunk
+  });
+
+  test('Ships are alive if they have not been hit at all', () => {
+    expect(battleship.getShipStatus()).toEqual(true);
+  });
+
+  test('Ships are alive if they have not been hit in every position', () => {
+    expect(destroyer.getShipStatus()).toEqual(true);
   });
 });

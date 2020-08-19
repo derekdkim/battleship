@@ -1,6 +1,7 @@
 function Ship (length) {
   let pos = [];
   let pos_hit = [];
+  let alive = true;
 
   const placeShip = (gameboard) => {
     let originX;
@@ -14,12 +15,10 @@ function Ship (length) {
 
     let direction = isPositionAllowed(originX, originY, gameboard, true);
     pos = assignPos(originX, originY, direction);
-    pos_hit = populateHitTracker();
-    gameboard.setShipCoord(pos);
+    populateHitTracker();
   }
 
-  const isPositionAllowed = (x, y, gameboard, suggestPos) => {
-    const board = gameboard.getBoard();
+  const isPositionAllowed = (x, y, board, suggestPos) => {
     // Fulfills at least one criteria
     // X... +3, X... -3, Y... +3, Y... -3 is empty
     let possibleDirection = [];
@@ -28,7 +27,7 @@ function Ship (length) {
     if (x + length < 8) {
       let allowedFlag = true;
       for (let i = 0; i < length; i++) {
-        if (board[y][x + i] !== 0) {
+        if (board[y][x + i] !== -1) {
           allowedFlag = false;
         }
       }
@@ -41,7 +40,7 @@ function Ship (length) {
     if (x - length >= 0) {
       let allowedFlag = true;
       for (let i = 0; i < length; i++) {
-        if (board[y][x - i] !== 0) {
+        if (board[y][x - i] !== -1) {
           allowedFlag = false;
         }
       }
@@ -54,7 +53,7 @@ function Ship (length) {
     if (y - length >= 0) {
       let allowedFlag = true;
       for (let i = 0; i < length; i++) {
-        if (board[y - i][x] !== 0) {
+        if (board[y - i][x] !== -1) {
           allowedFlag = false;
         }
       }
@@ -67,7 +66,7 @@ function Ship (length) {
     if (y + length < 8) {
       let allowedFlag = true;
       for (let i = 0; i < length; i++) {
-        if (board[y + i][x] !== 0) {
+        if (board[y + i][x] !== -1) {
           allowedFlag = false;
         }
       }
@@ -115,8 +114,27 @@ function Ship (length) {
   const getPos = () => {
     return pos;
   }
+
+  const receiveHit = (target) => {
+    pos.forEach(point => {
+      if (point === target) {
+        pos_hit[pos.indexOf(point)] = true;
+      }
+    })
+    sunkCheck();
+  }
+
+  const sunkCheck = () => {
+    if (!pos_hit.includes(false)) {
+      alive = false;
+    }
+  }
+
+  const getShipStatus = () => {
+    return alive;
+  }
   
-  return { placeShip, getPos }
+  return { placeShip, getPos, receiveHit, getShipStatus }
 }
 
 export { Ship };
